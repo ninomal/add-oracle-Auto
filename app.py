@@ -5,7 +5,7 @@ from ui.ui import Ui
 def main():
     productsService = ProductsService()
     products = Products()
-    #ui = Ui()
+    ui = Ui()
     
     
     #info tables
@@ -23,17 +23,17 @@ def main():
     productsService.createTableAuto('branylsulteste', stringDataCreateTable)
     '''
     
-    path = r"C:\Users\ninomal\Documents\products.xlsx"
-    sheets = 'products'
+    #path = r"C:\Users\jonatas.leme\Documents\branylsul.xlsx"
+    #sheets = 'notas'
 
     #path = r"C:\Users\jonatas.leme\Documents\clients.xlsx"
     #sheets = 'clients'
     #rowLen = (products.getLenXlsxSheets(path, sheets) -1)
     #print(products.readXlsxIlocSheets(path, 2, sheets))
     #products.createDataSqlLines(path, sheets)
-    #products.createAuto('PRODUCTSNOVOVA', path, sheets)
+    #products.createAuto('PRODUCTSNOVO1', path, sheets)
     #nameColumns = productsService.getXlsxCOlmunsNameSheets(path, sheets)
-    products.addOracle(path, sheets, 'PRODUCTSNOVOVA')
+    #products.addOracle(path, sheets, 'PRODUCTSNOVO1')
 
 
 

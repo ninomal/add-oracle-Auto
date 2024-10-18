@@ -1,8 +1,7 @@
 from enums.enumsTypes import EnumsType
 from productsService.productsService import ProductsService
-import random
 import re
-from pathlib import Path
+
 
 PATTERNERCARESPECIAL = r'[^a-zA-Z0-9\s]'
 
@@ -28,7 +27,7 @@ class Products():
     
     def createColumnsAddRow(self, columnsName):
         stringRow = ''
-        stringRow = ', '.join(column for column in columnsName)
+        stringRow = ', '.join(column.upper() for column in columnsName)
         return stringRow
     
     #create the values for add in sql auto
@@ -37,6 +36,13 @@ class Products():
         for keys , values in listOfValues.items():
             valuesStr = str(values)
             valuesConvert = valuesStr.replace(',' , '.')
+            valuesConvert = valuesStr.replace('%' , 'PORCEM')
+            valuesConvert = valuesStr.replace('_' , ' ')
+            valuesConvert = valuesStr.replace('"' , '')
+            valuesConvert = valuesStr.replace("'" , '')
+            valuesConvert = valuesStr.replace(':' , ' ')
+            valuesConvert = valuesStr.replace('-' , ' ')
+
             stringList.append(f'{valuesConvert}')
         return stringList
 
@@ -48,9 +54,9 @@ class Products():
             if listOfColumns[row] == None:
                 pass
             if row == len(listOfColumns)- 1:
-                stringMescle += f'{listOfColumns[row]} {enumsType}'
+                stringMescle += f'{listOfColumns[row].upper()} {enumsType}'
             else:
-                stringMescle += f'{listOfColumns[row]} {enumsType} , \n'
+                stringMescle += f'{listOfColumns[row].upper()} {enumsType} , \n'
         return stringMescle
     
     def getEnumsType(self):
@@ -60,19 +66,32 @@ class Products():
     def refactEspecialCara(self, listOfColumns):
         listOfRefactColumns = []
         listOfRefactWithdoutCout = []
-        for text in listOfColumns:
+        for text in listOfColumns:     
             modified_text = re.sub(PATTERNERCARESPECIAL, "_", text)
             modified_text = modified_text.replace(" ", "")
-            listOfRefactColumns.append(f'{modified_text}')
+            modified_text = modified_text.replace("â", "a")
+            modified_text = modified_text.replace("ç", "c")
+            modified_text = modified_text.replace("ú", "u")
+            modified_text = modified_text.replace(" ", "")
+            modified_text = modified_text.replace("é", "e")
+            modified_text = modified_text.replace("á", "a")
+            listOfRefactColumns.append(f'{modified_text.upper()}')
             listOfRefactWithdoutCout.append(f'{modified_text}')
         return listOfRefactColumns
     
         # Replace special characters with '_' 
-    def refactEspecialCaraSemAS(self, listOfColumns, addID):
+    def refactEspecialCaraSemAS(self, listOfColumns):
         listOfRefactWithdoutCout = []
         for text in listOfColumns:
             modified_text = re.sub(PATTERNERCARESPECIAL, '_', text)
-            listOfRefactWithdoutCout.append(f'{modified_text}')
+            modified_text = modified_text.replace(" ", "")
+            modified_text = modified_text.replace("â", "a")
+            modified_text = modified_text.replace("ç", "c")
+            modified_text = modified_text.replace("ú", "u")
+            modified_text = modified_text.replace(" ", "")
+            modified_text = modified_text.replace("é", "e")
+            modified_text = modified_text.replace("á", "a")
+            listOfRefactWithdoutCout.append(f'{modified_text.upper()}')
         return listOfRefactWithdoutCout
 
     def createTableAUtoVarchar(self,listOfColumns, varchar = 250):
@@ -83,17 +102,11 @@ class Products():
             if listOfColumnsRefact[row] == None:
                 pass
             if row == len(listOfColumns)- 1:
-                stringMescle += f'{listOfColumnsRefact[row].lower()} {enumsType}'
+                stringMescle += f'{listOfColumnsRefact[row].upper()} {enumsType}'
             else:
-                stringMescle += f'{listOfColumnsRefact[row].lower()} {enumsType} , \n'
+                stringMescle += f'{listOfColumnsRefact[row].upper()} {enumsType} , \n'
         return stringMescle
         
-    def randImage(self):
-        rng = random.Random()
-        randInt = rng.randint(1, 5)
-        path = Path(fr"AdXlsxOracleData novo\ui\image\ess{randInt}.png")
-        return path
-    
     def checkTables(self, nameOfFile):
         return self.productsService.checkTables(nameOfFile)
     
@@ -113,37 +126,29 @@ class Products():
     def convertEspecialCarToDict(self, path, sheets, row, listOfColumns): 
         data = {}  
         data.update(self.productsService.readXlsxIlocSheets(path, row, sheets))    
-        refactHeadDict = self.refactEspecialCaraSemAS(data.keys(), True)
-        print(refactHeadDict)
-        print("\nteste")
+        refactHeadDict = self.refactEspecialCaraSemAS(data.keys())
         self.conts = 0
         for keys , value in data.items():
             self.dataDictRefact.update({refactHeadDict[self.conts] : value})
             self.conts +=1
         return self.dataDictRefact
     
+    #convert normal dict for especial dict value
     def convertEspecialCarToDictValues(self,path, row, sheets, listOfColumns):
         self.conts= 0
-        data = {}
-        dataRowList = []
+        dataDict = {}
+        
         dataRow = self.productsService.readXlsxIlocSheets(path, row, sheets)
         listOfValues = self.createValuesadd(dataRow)
-        print(listOfValues)
-        print(dataRow, 'esse')
-        print(len(listOfColumns))
-        print(len(listOfValues))
         for keys in listOfColumns:  
-            dataRowList.append({keys : listOfValues[self.conts]})
+            dataDict.update({keys : listOfValues[self.conts]})
             self.conts+=1
-
-        print(dataRow)
-        
-        print(dataRowList)
+        return dataDict
      
     #add columns name of insert into
     def columnsName(self, path, sheets):
         data = self.productsService.readXlsxIlocSheets(path,0, sheets)
-        refactHeadDict = self.refactEspecialCaraSemAS(data.keys(), False)
+        refactHeadDict = self.refactEspecialCaraSemAS(data.keys())
         return refactHeadDict
         
     #add auto for sql inject
@@ -181,14 +186,9 @@ class Products():
         listDictColumns = self.productsService.getColumnsNames(tableName)
         stringsInput = self.createColumnsAdd(listDictColumns)
         rowLen = self.productsService.getLenXlsxSheets(path, sheets)
-        #dataStringTrigger = self.createColumnsAdd(columnsNamesRow)[1]
-        for row in range(1):
-            print("dict\n")
-            print(self.columnsName(path, sheets), 'esseeescreaye')
+        for row in range(rowLen):
             listOfCOlumnsName = self.columnsName(path, sheets)
-            self.convertEspecialCarToDictValues(path, 1, sheets, listOfCOlumnsName)
-            #insertData = self.convertEspecialCarToDict(path, sheets, row, stringsInput[0])
-            #print(insertData)
-            #print(self.productsService.addOracleDataAuto(stringsInput[0], stringsInput[1], tableName, insertData))
+            insertData = self.convertEspecialCarToDictValues(path, 1, sheets, listOfCOlumnsName)
+            print(self.productsService.addOracleDataAuto(stringsInput[0], stringsInput[1], tableName, insertData))
 
  

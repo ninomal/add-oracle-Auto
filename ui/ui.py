@@ -5,6 +5,8 @@ from tkinter import ttk
 from pathlib import Path
 from tkinter import filedialog
 from products.products import Products
+from pathlib import Path
+import random
 
 
 class Ui():
@@ -35,7 +37,6 @@ class Ui():
                                    background="#4A1985")
         self.anchorPane.place(x=15, y=135) 
         
-        
         self.Labelcaminho = tk.Label(self.anchorPane, text="Procure o arquivo Excel",
                                      font=("Helvetica", 21), bg="#4A1985")
         self.Labelcaminho.place(x=12, y=120, width=350, height=31)
@@ -47,7 +48,10 @@ class Ui():
         image_frame.create_image(100, 100, image = self.logo_img)
         
     def randomImagem(self):
-        path = self.products.randImage()
+        rng = random.Random()
+        randInt = rng.randint(1, 5)
+        path = Path(fr"ui\image\ess{randInt}.png")
+        print(path)
         return path
                                                    
     def buttonPainel(self):
@@ -77,6 +81,18 @@ class Ui():
     def popTabelaExist(self):
         messagebox.showwarning(title="Erro",
                 message= "Tabela existe utilize outro nome")
+    
+    def popTabelaNoExist(self):
+        messagebox.showwarning(title="Erro",
+                message= "Nome da Tabela Não encontrada ")
+        
+    def popDataADD(self):
+        messagebox.showwarning(title="Adicionada",
+                message= "Os dados foram adicionados")
+        
+    def popTableADD(self):
+        messagebox.showwarning(title="Criado",
+                message= f"A tabela {self.bancoEntry.get().upper()} foi criado")
                                
     def clearLIstEntrys(self):
         self.listData = []
@@ -129,13 +145,16 @@ class Ui():
             self.bancoEntry.delete(0, END)
         else:
             self.products.createAuto(self.bancoEntry.get(), self.caminhoEntry, self.comboTabelas.get())
-    
-    #HEREEEE add data 
+            self.popTableADD()
+    #add data in oracle trigger
     def addOracle(self):
-        data = self.products.addOracle()
-        #print(self.products.addOracleDataAuto(self.bancoEntry, data))
+        if self.products.checkTables(self.bancoEntry.get().upper()):
+            self.products.addOracle(self.caminhoEntry, self.comboTabelas.get(), self.bancoEntry.get())
+            self.popDataADD()
+        else:
+            self.popTabelaNoExist()
+            self.bancoEntry.delete(0, END)
         
-
     #search for xlsx file with click
     def clickSearch(self):
         self.caminhoEntry = Path(filedialog.askopenfilename())

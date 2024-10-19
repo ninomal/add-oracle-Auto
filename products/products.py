@@ -172,7 +172,6 @@ class Products():
     #convert for string output
     def converDictForStringValues(self, datas):
         stringValues = ""
-        print(len(datas))
         for keys , values in datas.items():
             self.conts+= 1
             if self.conts == len(datas):
@@ -189,6 +188,6 @@ class Products():
         for row in range(rowLen):
             listOfCOlumnsName = self.columnsName(path, sheets)
             insertData = self.convertEspecialCarToDictValues(path, 1, sheets, listOfCOlumnsName)
-            print(self.productsService.addOracleDataAuto(stringsInput[0], stringsInput[1], tableName, insertData))
+            self.productsService.addOracleDataAuto(stringsInput[0], stringsInput[1], tableName, insertData)
 
  

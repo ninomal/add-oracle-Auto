@@ -19,8 +19,6 @@ class ProductsService():
                             ({columnsStringValueTrigger})
                 """
             
-            print(insert_query, 'esse\n')
-            print(dictData, 'data\n')
             self.cursor.execute(insert_query, dictData)
             
             # Commit the transaction

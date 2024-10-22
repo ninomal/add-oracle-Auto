@@ -10,6 +10,8 @@ class ProductsService():
         self.cursor = self.conection.cursor()
         self.columnsName = ""
         self.dictData = {}
+        self.conts = 0
+        self.ErrorLine = ''
       
     def addOracleDataAuto(self, columnsString, columnsStringValueTrigger, tableName, dictData):
         try:
@@ -24,9 +26,12 @@ class ProductsService():
             # Commit the transaction
             self.conection.commit()  
             print("Data added successfully!")
-        
+            self.conts += 1
+            print("Line: ", self.conts )
+            print("Line ERRRO: ", self.ErrorLine)
         except cx_Oracle.DatabaseError as e:
             error, = e.args
+            self.ErrorLine += f'{dictData}'
             return ("Oracle Database Error:", error.message)
         
     def getTableInfo(self, name):

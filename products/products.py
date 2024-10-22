@@ -14,8 +14,7 @@ class Products():
         self.stringOfValues = ""
         self.contsData = 0
         self.listOfTuplesOfValues = []
-
-               
+             
     def createColumnsAdd(self, columnsName):
         stringList = []
         stringRow = ', '.join(column for column in columnsName)
@@ -46,19 +45,6 @@ class Products():
             stringList.append(f'{valuesConvert}')
         return stringList
 
-    # ADD in string output and mescle two list for create table
-    def createTable(self, listOfColumns, listOfEnumsTypes):
-        stringMescle =''
-        for row in range(len(listOfColumns)):
-            enumsType = self.enumsType.type(listOfEnumsTypes[row])
-            if listOfColumns[row] == None:
-                pass
-            if row == len(listOfColumns)- 1:
-                stringMescle += f'{listOfColumns[row].upper()} {enumsType}'
-            else:
-                stringMescle += f'{listOfColumns[row].upper()} {enumsType} , \n'
-        return stringMescle
-    
     def getEnumsType(self):
         return self.enumsType.getAllEnumsType()
     
@@ -76,24 +62,8 @@ class Products():
             modified_text = modified_text.replace("é", "e")
             modified_text = modified_text.replace("á", "a")
             listOfRefactColumns.append(f'{modified_text.upper()}')
-            listOfRefactWithdoutCout.append(f'{modified_text}')
         return listOfRefactColumns
     
-        # Replace special characters with '_' 
-    def refactEspecialCaraSemAS(self, listOfColumns):
-        listOfRefactWithdoutCout = []
-        for text in listOfColumns:
-            modified_text = re.sub(PATTERNERCARESPECIAL, '_', text)
-            modified_text = modified_text.replace(" ", "")
-            modified_text = modified_text.replace("â", "a")
-            modified_text = modified_text.replace("ç", "c")
-            modified_text = modified_text.replace("ú", "u")
-            modified_text = modified_text.replace(" ", "")
-            modified_text = modified_text.replace("é", "e")
-            modified_text = modified_text.replace("á", "a")
-            listOfRefactWithdoutCout.append(f'{modified_text.upper()}')
-        return listOfRefactWithdoutCout
-
     def createTableAUtoVarchar(self,listOfColumns, varchar = 250):
         listOfColumnsRefact = self.refactEspecialCara(listOfColumns)
         stringMescle =''
@@ -101,7 +71,7 @@ class Products():
         for row in range(len(listOfColumns)):
             if listOfColumnsRefact[row] == None:
                 pass
-            if row == len(listOfColumns)- 1:
+            elif row == len(listOfColumns)- 1:
                 stringMescle += f'{listOfColumnsRefact[row].upper()} {enumsType}'
             else:
                 stringMescle += f'{listOfColumnsRefact[row].upper()} {enumsType} , \n'
@@ -126,7 +96,7 @@ class Products():
     def convertEspecialCarToDict(self, path, sheets, row, listOfColumns): 
         data = {}  
         data.update(self.productsService.readXlsxIlocSheets(path, row, sheets))    
-        refactHeadDict = self.refactEspecialCaraSemAS(data.keys())
+        refactHeadDict = self.refactEspecialCara(data.keys())
         self.conts = 0
         for keys , value in data.items():
             self.dataDictRefact.update({refactHeadDict[self.conts] : value})
@@ -148,7 +118,7 @@ class Products():
     #add columns name of insert into
     def columnsName(self, path, sheets):
         data = self.productsService.readXlsxIlocSheets(path,0, sheets)
-        refactHeadDict = self.refactEspecialCaraSemAS(data.keys())
+        refactHeadDict = self.refactEspecialCara(data.keys())
         return refactHeadDict
         
     #add auto for sql inject
@@ -187,7 +157,7 @@ class Products():
         rowLen = self.productsService.getLenXlsxSheets(path, sheets)
         for row in range(rowLen):
             listOfCOlumnsName = self.columnsName(path, sheets)
-            insertData = self.convertEspecialCarToDictValues(path, 1, sheets, listOfCOlumnsName)
+            insertData = self.convertEspecialCarToDictValues(path, row, sheets, listOfCOlumnsName)
             self.productsService.addOracleDataAuto(stringsInput[0], stringsInput[1], tableName, insertData)
 
  

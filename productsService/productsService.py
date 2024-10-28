@@ -1,6 +1,7 @@
 import cx_Oracle
 from models.conection import Conection
 import pandas as pd
+import os
 
 
 class ProductsService():
@@ -24,7 +25,8 @@ class ProductsService():
             self.cursor.execute(insert_query, dictData)
             
             # Commit the transaction
-            self.conection.commit()  
+            self.conection.commit() 
+            os.system('cls') 
             print("Data added successfully!")
             self.conts += 1
             print("Line: ", self.conts )

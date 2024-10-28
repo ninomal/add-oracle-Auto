@@ -1,4 +1,4 @@
-## metatrader5 Api
+## Oracle Dynamics Api
 
 [![NPM](https://img.shields.io/badge/Lincence-MIT-red)](https://github.com/ninomal/metatrader5/blob/main/LICENSE1)
 
